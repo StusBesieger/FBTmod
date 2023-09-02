@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using Modding;
 using Modding.Blocks;
 using UnityEngine;
+using StusFBT;
 
-namespace blockstate
+namespace StusFBT
 {
 	public class Mod : ModEntryPoint
 	{
 		public override void OnLoad()
 		{
-			mod = new GameObject("StusFBTcontroller")
+			mod = new GameObject("StusFBTcontroller");
 			SingleInstance<FBTBlockSelector>.Instance.transform.parent = mod.transform;
-
 			UnityEngine.Object.DontDestroyOnLoad(mod);
 		}
-
 		public static void Log(string msg)
        {
 		Debug.Log("stus FBTmod : " + msg);
@@ -37,7 +36,7 @@ namespace blockstate
 		{
 			//ブロックIDとスクリプト
 			//弾薬庫ブロック（未作成）
-			{, tyoeof(ExplosionScript)},
+			//{, tyoeof(ExplosionScript)},
 
 		};
 		public override string Name
@@ -48,13 +47,13 @@ namespace blockstate
 			}
 		}
 		//メソッド
-		public void Awake()
+		public void Start()
 		{
-			Events.OnBlockInit += new Action<Block>(AddScript);
+			Events.OnBlockInit += new AddScript;
 		}
 		public void AddScript(Block block)
 		{
-			BlockBehaciour BlockBehaviour internalObject = block.BuildingBlock.InternalObject;
+			BlockBehaviour internalObject = block.BuildingBlock.InternalObject;
 			if (BlockDict.ContainsKey(internalObject.BlockID))
 			{
 				Type type = BlockDict[internalObject.BlockID];
@@ -76,20 +75,35 @@ namespace blockstate
 		}
 	}
 
-	//hpが0になったら爆発するスクリプト
-	public class ExplosionScript : MonoBehaviour
+	//ブロックhpが0になったら爆発するスクリプト
+	public class ExplosionScript : Block
 	{
-		public float Health { get; } 
-
-		//hpが0になった時爆発させる
-		if( == 0)
+		private BlockBehaviour block;
+		void Start()
 		{
-			//爆発を生成する？
-		eocb = gameObject.GetComponent<ExplodeOnCollideBlock>();
-		eocb.radius = 9f;
-		eocb.SimPhysics = true;
-		eocb.Explodey();
+			block = base.GetComponent<BlockBehaviour>();
 		}
-		
+		void FixedUpdate()
+		{
+			if( Health <= 0.01)
+			{
+				float hp;
+				if (block.Prefab.hasHealthBar)
+				{
+					hp = block.BlockHealth.health;
+					if(hp <= 0.01)
+					Explodey();
+				}
+			}
+		}
+		private void Explodey()
+		{
+			GameObject gameObject = (gameObject)object.Instantiate(PrefabMaster.BlockPrefabs[23].gameObject, base.transform.position, base.transform.rotation, base.transform)
+			GetComponent<ExplodeOmCollideBlock>();
+			eocb =gameObject.GetComponent<ExplodeOnCollideBock>();
+			ecob.radius =7f;
+			ecob.Simphysics = true;
+			ecob.Explodey();
+		}
 	}
 }
