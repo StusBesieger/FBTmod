@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Modding;
 using Modding.Blocks;
@@ -80,6 +81,9 @@ namespace FBTcore
 	public class ExplosionScript : MonoBehaviour
 	{
 		private BlockBehaviour block;
+		//爆発ステータス
+		public float radius = 4.0F;
+		public float power = 10000.0F;
 		void Start()
 		{
 			block = base.GetComponent<BlockBehaviour>();
@@ -97,12 +101,17 @@ namespace FBTcore
 		}
 		private void Explodey()
 		{
-			GameObject gameObject = (gameObject)object.Instantiate(PrefabMaster.BlockPrefabs[23].gameObject, base.transform.position, base.transform.rotation, base.transform);
-			GetComponent<ExplodeOmCollideBlock>();
-			eocb = gameObject.GetComponent<ExplodeOnCollideBock>();
-			ecob.radius = 7f;
-			ecob.Simphysics = true;
-			ecob.Explodey();
+				Vector3 explosionPos = transform.position;
+				Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
+				foreach (Collider hit in colliders)
+				{
+					Rigidbody rb = hit.GetComponent<Rigidbody>();
+
+					if (rb != null)
+						rb.AddExplosionForce(power, explosionPos, radius, 3.0F);
+
+				}
+			Destroy(this.gameObject);
 		}
 	}
 }
