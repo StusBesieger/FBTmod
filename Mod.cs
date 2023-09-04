@@ -77,7 +77,7 @@ namespace FBTcore
 	}
 
 	//ブロックhpが0になったら爆発するスクリプト
-	public class ExplosionScript : Block
+	public class ExplosionScript : MonoBehaviour
 	{
 		private BlockBehaviour block;
 		void Start()
@@ -86,15 +86,13 @@ namespace FBTcore
 		}
 		void FixedUpdate()
 		{
-			if (Health <= 0.01)
+
+			float hp;
+			if (block.Prefab.hasHealthBar)
 			{
-				float hp;
-				if (block.Prefab.hasHealthBar)
-				{
-					hp = block.BlockHealth.health;
-					if (hp <= 0.01)
-						Explodey();
-				}
+				hp = block.BlockHealth.health;
+				if (hp <= 0.01)
+					Explodey();
 			}
 		}
 		private void Explodey()
