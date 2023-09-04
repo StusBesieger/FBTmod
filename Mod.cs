@@ -3,40 +3,41 @@ using System.Collections.Generic;
 using Modding;
 using Modding.Blocks;
 using UnityEngine;
-using StusFBT;
+using FBTcore;
 
-namespace StusFBT
+namespace FBTcore
 {
 	public class Mod : ModEntryPoint
 	{
+		GameObject mod;
 		public override void OnLoad()
 		{
 			mod = new GameObject("StusFBTcontroller");
-			SingleInstance<FBTBlockSelector>.Instance.transform.parent = mod.transform;
+			SingleInstance<BlockSelector>.Instance.transform.parent = mod.transform;
 			UnityEngine.Object.DontDestroyOnLoad(mod);
 		}
 		public static void Log(string msg)
-       {
-		Debug.Log("stus FBTmod : " + msg);
-       }
+		{
+			Debug.Log("stus FBTmod : " + msg);
+		}
 		public static void Warning(string msg)
-       {
-		Debug.LogWarning("stus FBTmod : " + msg);
-       }
+		{
+			Debug.LogWarning("stus FBTmod : " + msg);
+		}
 		public static void Error(string msg)
-       {
-		Debug.LogError("stus FBTmod : " + msg);
-       }
+		{
+			Debug.LogError("stus FBTmod : " + msg);
+		}
 	}
 
-	//ãƒ–ãƒ­ãƒƒã‚¯ã«ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‚’è¿½åŠ 
-	public class BlocksSelector : SingleInstance<FBTBlockSelector>
+	//ƒuƒƒbƒN‚ÉƒXƒNƒŠƒvƒg‚ğ’Ç‰Á
+	public class BlockSelector : SingleInstance<BlockSelector>
 	{
-		public Dictionary<int, Type> BlockDict = new Dictionary<int, Type>
+		public Dictionary<string, Type> BlockDict = new Dictionary<string, Type>
 		{
-			//ãƒ–ãƒ­ãƒƒã‚¯IDã¨ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
-			//å¼¾è–¬åº«ãƒ–ãƒ­ãƒƒã‚¯ï¼ˆæœªä½œæˆï¼‰
-			//{, tyoeof(ExplosionScript)},
+			//ƒuƒƒbƒNID‚ÆƒXƒNƒŠƒvƒg
+			//’e–òŒÉƒuƒƒbƒNi–¢ì¬j
+			{"a3567e7a-50bd-41f4-87cc-1b93a3e93852-6", typeof(ExplosionScript)},
 
 		};
 		public override string Name
@@ -46,10 +47,10 @@ namespace StusFBT
 				return "Stus FBT BlocksSelector";
 			}
 		}
-		//ãƒ¡ã‚½ãƒƒãƒ‰
+		//ƒƒ\ƒbƒh
 		public void Start()
 		{
-			Events.OnBlockInit += new AddScript;
+			Events.OnBlockInit += new Action<Block>(AddScript);
 		}
 		public void AddScript(Block block)
 		{
@@ -59,7 +60,7 @@ namespace StusFBT
 				Type type = BlockDict[internalObject.BlockID];
 				try
 				{
-					//è²¼ã‚Šä»˜ã‘ã¦ã„ã‚‹å ´åˆ
+					//“\‚è•t‚¯‚Ä‚¢‚éê‡
 					if (internalObject.GetComponent(type) == null)
 					{
 						internalObject.gameObject.AddComponent(type);
@@ -75,7 +76,7 @@ namespace StusFBT
 		}
 	}
 
-	//ãƒ–ãƒ­ãƒƒã‚¯hpãŒ0ã«ãªã£ãŸã‚‰çˆ†ç™ºã™ã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
+	//ƒuƒƒbƒNhp‚ª0‚É‚È‚Á‚½‚ç”š”­‚·‚éƒXƒNƒŠƒvƒg
 	public class ExplosionScript : Block
 	{
 		private BlockBehaviour block;
@@ -85,23 +86,23 @@ namespace StusFBT
 		}
 		void FixedUpdate()
 		{
-			if( Health <= 0.01)
+			if (Health <= 0.01)
 			{
 				float hp;
 				if (block.Prefab.hasHealthBar)
 				{
 					hp = block.BlockHealth.health;
-					if(hp <= 0.01)
-					Explodey();
+					if (hp <= 0.01)
+						Explodey();
 				}
 			}
 		}
 		private void Explodey()
 		{
-			GameObject gameObject = (gameObject)object.Instantiate(PrefabMaster.BlockPrefabs[23].gameObject, base.transform.position, base.transform.rotation, base.transform)
+			GameObject gameObject = (gameObject)object.Instantiate(PrefabMaster.BlockPrefabs[23].gameObject, base.transform.position, base.transform.rotation, base.transform);
 			GetComponent<ExplodeOmCollideBlock>();
-			eocb =gameObject.GetComponent<ExplodeOnCollideBock>();
-			ecob.radius =7f;
+			eocb = gameObject.GetComponent<ExplodeOnCollideBock>();
+			ecob.radius = 7f;
 			ecob.Simphysics = true;
 			ecob.Explodey();
 		}
