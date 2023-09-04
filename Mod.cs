@@ -82,7 +82,7 @@ namespace FBTcore
 	{
 		private BlockBehaviour block;
 		//爆発ステータス
-		public float radius = 4.0F;
+		public float radius = 6.0F;
 		public float power = 10000.0F;
 		void Start()
 		{
