@@ -37,8 +37,10 @@ namespace FBTcore
 	public class ExplosionScript : BlockScript
 	{
 		private BlockBehaviour block;
-		public float radius = 5.0F;
-		public float power = 1000.0F;
+		public float power = 50.0F;
+		public float radius = 5.0f;
+		public float upward = 1.0f;
+
 		//爆発ステータス
 
 		void Start()
@@ -62,15 +64,15 @@ namespace FBTcore
 		void Explode()
 		{
 			Debug.Log("stus FBTmod2 : ");
-			Vector3 explosionPos = transform.position;
-			Collider[] colliders = Physics.OverlapSphere(explosionPos, radius);
-			foreach (Collider hit in colliders)
+			Collider[] Colliders = Physics.OverlapSphere(transform.position, 5.0f);
+			foreach(Collider cube in Colliders)
 			{
-				Rigidbody rb = hit.GetComponent<Rigidbody>();
-
-				if (rb != null)
-					rb.AddExplosionForce(power, explosionPos, radius, 3.0F);
-				this.gameObject.SetActive(false);
+				if (cube.GetComponent<Rigidbody>())
+				{
+					cube.GetComponent<Rigidbody>().AddExplosionForce(power, transform.position, radius, upward, ForceMode.Impulse);
+					Debug.Log("stus FBTmod3 : ");
+					this.gameObject.SetActive(false);
+				}
 			}
 		}
 	}
